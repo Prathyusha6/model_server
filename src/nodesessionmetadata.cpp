@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <numeric>
 #include <sstream>
 #include <utility>
 
@@ -139,7 +140,14 @@ session_id_t NodeSessionMetadata::getShardId(const std::set<std::string>& collap
     }
     for (size_t i = sessionsLevels.size() - 1; i > 0; --i) {
         if (collapsedNames.find(sessionsLevels[i]) == collapsedNames.end()) {
-            SPDLOG_LOGGER_ERROR(dag_executor_logger, "Tried to collapse sessions not in LIFO order. Should collapse: {} first", sessionsLevels[i]);
+            SPDLOG_LOGGER_ERROR(dag_executor_logger, "Tried to collapse sessions not in LIFO order. Should collapse: {} first, but tried to:{}",
+                    sessionsLevels[i],
+                    std::accumulate(collapsedNames.begin(),
+                                    collapsedNames.end(),
+                                    std::string(),
+                                    [](const std::string& lhs, const std::string rhs) {
+                                        return lhs + ", " + rhs;
+                                    }));
             throw std::logic_error("Cannot collapse sessions not in LIFO order");
         }
     }

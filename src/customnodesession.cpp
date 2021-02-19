@@ -148,9 +148,10 @@ Status CustomNodeSession::createBlob(const struct CustomNodeTensor* tensor, Infe
 
     InferenceEngine::Precision precision = toInferenceEnginePrecision(tensor->precision);
     if (precision == InferenceEngine::Precision::UNSPECIFIED) {
-        SPDLOG_LOGGER_ERROR(dag_executor_logger, "Node {}; session: {}; Unspecified output precision from custom node",
+        SPDLOG_LOGGER_ERROR(dag_executor_logger, "Node {}; session: {}; Unspecified output precision from custom node tensor: {}",
             this->getName(),
-            this->getSessionKey());
+            this->getSessionKey(),
+            tensor->name);
         return StatusCode::NODE_LIBRARY_INVALID_PRECISION;
     }
     desc.setPrecision(precision);

@@ -70,10 +70,10 @@ int execute(const struct CustomNodeTensor* inputs, int inputsLength, struct Cust
     // prepare outputs
     *outputsLength = 2;
     *outputs = (struct CustomNodeTensor*)malloc(*outputsLength * sizeof(CustomNodeTensor));
-    float* result = (float*)malloc(OPS_END * valuesPerTensor * sizeof(float));  // dummy input size * numbr of ops
-    float* resultFactors = (float*)malloc(OPS_END * OPS_END * sizeof(float));  // dummy input size * numbr of ops
+    float* result = (float*)malloc(OPS_END * valuesPerTensor * sizeof(float));  // dummy input size * number of ops
+    float* resultFactors = (float*)malloc(OPS_END * OPS_END * sizeof(float));   // dummy input size * number of ops
 
-    CustomNodeTensor& resultTensor = *outputs[*outputsLength - 2];
+    CustomNodeTensor& resultTensor = (*outputs)[0];
     resultTensor.name = "different_ops_results";
     resultTensor.data = reinterpret_cast<uint8_t*>(result);
     resultTensor.dimsLength = 3;
@@ -84,8 +84,8 @@ int execute(const struct CustomNodeTensor* inputs, int inputsLength, struct Cust
     resultTensor.dataLength = resultTensor.dims[0] * resultTensor.dims[1] * resultTensor.dims[2] * sizeof(float);
     resultTensor.precision = FP32;
 
-    CustomNodeTensor& resultFactorsTensor = *outputs[*outputsLength - 1];
-    resultFactorsTensor.name = "factors_results";
+    CustomNodeTensor& resultFactorsTensor = (*outputs)[*outputsLength - 1];
+    resultFactorsTensor.name = "different_ops_factors_results";
     resultFactorsTensor.data = reinterpret_cast<uint8_t*>(resultFactors);
     resultFactorsTensor.dimsLength = 3;
     resultFactorsTensor.dims = (uint64_t*)malloc(resultFactorsTensor.dimsLength * sizeof(uint64_t));
@@ -94,7 +94,6 @@ int execute(const struct CustomNodeTensor* inputs, int inputsLength, struct Cust
     resultFactorsTensor.dims[2] = OPS_END;
     resultFactorsTensor.dataLength = resultFactorsTensor.dims[0] * resultFactorsTensor.dims[1] * resultFactorsTensor.dims[2] * sizeof(float);
     resultFactorsTensor.precision = FP32;
-
     // perform operations
     for (size_t opId = 0; opId < OPS_END; ++opId) {
         for (size_t factorsPos = 0; factorsPos < OPS_END; ++factorsPos) {
